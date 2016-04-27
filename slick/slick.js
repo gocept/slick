@@ -1063,6 +1063,32 @@
 
     };
 
+
+    Slick.prototype.getVerticalHeight = function (slideIndex) {
+
+        var _ = this,
+            height = 0,
+            currentSlide = ((typeof slideIndex !== 'undefined') ? slideIndex : _.currentSlide),
+            slides_to_consider = _.$slides.slice(currentSlide, currentSlide + _.options.slidesToShow);
+        slides_to_consider.each(function (i, slide) {
+            height += $(slide).outerHeight(true);
+        });
+        return height;
+    };
+
+
+    Slick.prototype.getScrollHeight = function (slideIndex) {
+
+        var _ = this,
+            height = 0,
+            currentSlide = ((typeof slideIndex !== 'undefined') ? slideIndex : _.currentSlide),
+            slides_to_consider = _.$slides.slice(0, currentSlide);
+        slides_to_consider.each(function (i, slide) {
+            height += $(slide).outerHeight(true);
+        });
+        return height;
+    };
+
     Slick.prototype.getLeft = function(slideIndex) {
 
         var _ = this,
@@ -1112,7 +1138,8 @@
         if (_.options.vertical === false) {
             targetLeft = ((slideIndex * _.slideWidth) * -1) + _.slideOffset;
         } else {
-            targetLeft = ((slideIndex * verticalHeight) * -1) + verticalOffset;
+            var verticalHeight = _.getScrollHeight();
+            targetLeft = (verticalHeight * -1) + verticalOffset;
         }
 
         if (_.options.variableWidth === true) {
@@ -1154,6 +1181,7 @@
             }
         }
 
+        console.log(targetLeft);
         return targetLeft;
 
     };
@@ -1921,7 +1949,7 @@
                 });
             }
         } else {
-            _.$list.height(_.$slides.first().outerHeight(true) * _.options.slidesToShow);
+            _.$list.height(_.getVerticalHeight());
             if (_.options.centerMode === true) {
                 _.$list.css({
                     padding: (_.options.centerPadding + ' 0px')
@@ -2471,6 +2499,7 @@
         }
 
         if (dontAnimate !== true) {
+            targetLeft = _.getLeft(targetSlide);
             _.animateSlide(targetLeft, function() {
                 _.postSlide(animSlide);
             });
