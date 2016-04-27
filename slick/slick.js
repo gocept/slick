@@ -1181,7 +1181,6 @@
             }
         }
 
-        console.log(targetLeft);
         return targetLeft;
 
     };
